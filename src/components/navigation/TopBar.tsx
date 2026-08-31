@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTeamResults } from '@/hooks/useTeamResults';
+import useAuth from '@/hooks/useAuth';
 
 export interface TopBarProps {
   className?: string;
@@ -10,6 +11,7 @@ export interface TopBarProps {
 
 export default function TopBar({ className = '', onMenuClick }: TopBarProps) {
   const [timeString, setTimeString] = useState<string>('10:24:36 PM');
+  const { user } = useAuth();
   const { totalScore, loading: scoreLoading } = useTeamResults();
 
   useEffect(() => {
@@ -85,15 +87,15 @@ export default function TopBar({ className = '', onMenuClick }: TopBarProps) {
         {/* Team ID */}
         <div className="flex flex-col text-right">
           <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-            TEAM ID
+            TEAM
           </span>
           <span className="text-xs font-mono font-extrabold text-cyan-300">
-            TEAM_014
+            {user?.name || user?.teamId || 'TEST001'}
           </span>
         </div>
 
-        {/* Score Badge */}
-        <div className="flex flex-col items-center bg-gradient-to-r from-purple-900/40 to-indigo-900/40 px-3 py-1 rounded-md border border-purple-500/40 shadow-sm">
+        {/* Live Points Score Badge */}
+        <div className="flex flex-col items-center bg-gradient-to-r from-purple-900/40 to-indigo-900/40 px-3.5 py-1 rounded-md border border-purple-500/40 shadow-sm">
           <span className="text-[9px] font-mono text-purple-300 uppercase tracking-wider">
             SCORE
           </span>

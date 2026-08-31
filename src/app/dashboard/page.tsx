@@ -12,6 +12,7 @@ import LoadingState from '@/components/common/LoadingState';
 import ErrorState from '@/components/common/ErrorState';
 import { useEventState } from '@/hooks/useEventState';
 import { useTeamResults } from '@/hooks/useTeamResults';
+import useAuth from '@/hooks/useAuth';
 import { buildEventProgressSteps } from '@/lib/eventProgress';
 
 const ROUND_ROUTES: Record<0 | 1 | 2 | 3, string> = {
@@ -22,6 +23,7 @@ const ROUND_ROUTES: Record<0 | 1 | 2 | 3, string> = {
 };
 
 function DashboardContent() {
+  const { user } = useAuth();
   const eventState = useEventState();
   const { loading, error, refresh, currentRound, eventStatus } = eventState;
   const { totalScore } = useTeamResults();
@@ -49,20 +51,17 @@ function DashboardContent() {
   return (
     <ParticipantLayout>
       <div className="flex flex-col gap-6">
-        {/* Two-column split built locally (not via ParticipantLayout's rightSidebar slot)
-            so the Enter Event button below can span full-width under both columns,
-            landing at the true bottom of the page regardless of which column is taller. */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
           <div className="xl:col-span-8 flex flex-col gap-6 min-w-0">
-            {/* Header — trophy icon floats freely, no boxed background */}
+            {/* Header — trophy graphic */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex flex-col gap-1 max-w-xl">
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-400">
-                  Welcome back!
+                  Welcome back, {user?.name || 'Warrior'}!
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Team Dashboard</h1>
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mt-1">
-                  Track your progress, check event status and enter the arena when you&apos;re ready.
+                  Track your progress, check live score standings and enter the arena when you&apos;re ready.
                 </p>
               </div>
 
@@ -74,7 +73,6 @@ function DashboardContent() {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Big closed loop handles, echoing the classic trophy silhouette */}
                   <path
                     d="M 30 22 C 10 22, 6 42, 16 52 C 21 57, 28 58, 33 55"
                     stroke="#06b6d4"
@@ -89,23 +87,15 @@ function DashboardContent() {
                     strokeLinecap="round"
                     fill="none"
                   />
-
-                  {/* Cup body — rounded shoulders tapering to the neck */}
                   <path
                     d="M 26 16 L 74 16 C 74 30, 72 44, 62 54 C 58 58, 54 60, 50 60 C 46 60, 42 58, 38 54 C 28 44, 26 30, 26 16 Z"
                     fill="#8b5cf6"
                   />
-
-                  {/* Star emblem */}
                   <path
                     d="M 50 28 L 53.5 36 L 62 37 L 55.5 42.5 L 57.5 51 L 50 46.5 L 42.5 51 L 44.5 42.5 L 38 37 L 46.5 36 Z"
                     fill="#00f5d4"
                   />
-
-                  {/* Neck */}
                   <rect x="45" y="60" width="10" height="10" fill="#8b5cf6" />
-
-                  {/* Two-tier pedestal base */}
                   <rect x="36" y="70" width="28" height="9" rx="2" fill="#8b5cf6" stroke="#06b6d4" strokeWidth="1.5" />
                   <rect x="26" y="79" width="48" height="11" rx="2" fill="none" stroke="#06b6d4" strokeWidth="2.5" />
                 </svg>
@@ -152,12 +142,17 @@ function DashboardContent() {
           </div>
 
           <div className="xl:col-span-4 flex flex-col gap-6">
-            <TeamOverviewCard teamId="TEAM_014" joinedAt="10:05:21 PM" rank="—" activityStatus="ACTIVE NOW" />
+            <TeamOverviewCard
+              teamId={user?.teamId || user?.name || 'TEST001'}
+              joinedAt="ACTIVE SESSION"
+              rank="LIVE"
+              activityStatus="ONLINE NOW"
+            />
             <TeamMembersCard />
           </div>
         </div>
 
-        {/* Enter Event action button — full-width, spans below both columns */}
+        {/* Enter Event action button — full-width */}
         <Link
           href={enterHref}
           className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-xs sm:text-sm font-mono font-extrabold uppercase tracking-[0.15em] rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.01] transition-all border border-purple-400/40"
